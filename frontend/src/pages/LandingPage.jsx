@@ -19,7 +19,7 @@ const LandingPage = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Wallet className="w-8 h-8 text-purple-400" />
-            <h1 className="text-2xl font-bold text-white">PayQRIS</h1>
+            <h1 className="text-2xl font-bold text-white">Tnsmiley Topup</h1>
           </div>
           <div className="flex items-center gap-3">
             {isLoggedIn ? (
@@ -72,7 +72,7 @@ const LandingPage = () => {
               onClick={() => navigate('/telegram')}
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold transition transform hover:scale-105"
             >
-              Beli Telegram OLD
+              Beli Akun Telegram
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
