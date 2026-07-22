@@ -117,7 +117,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center text-gray-400 border-t border-white/10">
-        <p>&copy; 2024 PayQRIS. All rights reserved.</p>
+        <p>&copy; 2026 Dpayment. All rights reserved.</p>
       </footer>
     </div>
   );
