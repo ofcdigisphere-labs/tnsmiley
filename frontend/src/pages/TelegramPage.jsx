@@ -1,14 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Phone, ArrowLeft, Loader2, CreditCard, Coins, CheckCircle, XCircle } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Phone, MessageSquare, Mail, ArrowLeft, Loader2, CreditCard, Coins, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { telegramAPI } from '../services/api';
+import { nokosAPI } from '../services/api'; // Sesuaikan dengan path service API Anda
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const TelegramPage = () => {
+// Konfigurasi jenis layanan nokos
+const serviceConfig = {
+  telegram: { title: 'Beli Telegram OLD', icon: Phone, color: 'text-blue-400' },
+  whatsapp: { title: 'Beli WhatsApp OTP', icon: MessageSquare, color: 'text-green-400' },
+  gmail: { title: 'Beli Akun Gmail', icon: Mail, color: 'text-red-400' },
+};
+
+const NokosPage = () => {
   const navigate = useNavigate();
+  const { serviceName = 'telegram' } = useParams(); // Default ke telegram jika parameter kosong
+  const currentService = serviceConfig[serviceName] || serviceConfig['telegram'];
+  const IconComponent = currentService.icon;
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [countries, setCountries] = useState([]);
@@ -31,12 +42,13 @@ const TelegramPage = () => {
       setUser(JSON.parse(userData));
     }
     fetchCountries();
-  }, []);
+  }, [serviceName]);
 
   const fetchCountries = async () => {
     setLoading(true);
     try {
-      const response = await telegramAPI.getCountries();
+      // Mengirim serviceName agar API backend mengambil data sesuai layanan (Telegram, WA, dll)
+      const response = await nokosAPI.getCountries(serviceName);
       if (response.data.success) {
         setCountries(response.data.data);
       }
@@ -63,6 +75,7 @@ const TelegramPage = () => {
 
     try {
       const payload = {
+        service: serviceName,
         countryCode: formData.selectedCountry.code,
         countryName: formData.selectedCountry.name,
         price: formData.selectedCountry.price,
@@ -76,26 +89,25 @@ const TelegramPage = () => {
 
       if (paymentMethod === 'balance') {
         payload.userId = user.userId;
-        const response = await telegramAPI.createWithBalance(payload);
+        const response = await nokosAPI.createWithBalance(payload);
         
         if (response.data.success) {
           const result = response.data.data;
-          // Update user balance
           const updatedUser = { ...user, balance: result.newBalance };
           localStorage.setItem('user', JSON.stringify(updatedUser));
           setUser(updatedUser);
 
           setOrderData(result);
-          setStep(4); // Polling Step
+          setStep(4); 
           startPaymentPolling(result.orderId);
         }
       } else {
         // QRIS
         if (user) payload.userId = user.userId;
-        const response = await telegramAPI.create(payload);
+        const response = await nokosAPI.create(payload);
         if (response.data.success) {
           setOrderData(response.data.data);
-          setStep(4); // QRIS Payment & Polling Step
+          setStep(4); 
           startPaymentPolling(response.data.data.orderId);
         }
       }
@@ -110,7 +122,7 @@ const TelegramPage = () => {
     setPollingStatus('payment');
     const interval = setInterval(async () => {
       try {
-        const res = await telegramAPI.checkStatus(orderId);
+        const res = await nokosAPI.checkStatus(orderId);
         const data = res.data.data;
         if (data.status === 'waiting_code') {
           clearInterval(interval);
@@ -126,7 +138,6 @@ const TelegramPage = () => {
       }
     }, 5000);
 
-    // clear interval on unmount
     return () => clearInterval(interval);
   };
 
@@ -147,7 +158,7 @@ const TelegramPage = () => {
       }
 
       try {
-        const res = await telegramAPI.getCode(orderId);
+        const res = await nokosAPI.getCode(orderId);
         const data = res.data.data;
         if (data.state === 'ok' && data.code) {
           clearInterval(interval);
@@ -171,12 +182,11 @@ const TelegramPage = () => {
 
   const cancelOrder = async (orderId) => {
     try {
-      const res = await telegramAPI.cancelOrder(orderId, { userId: user?.userId });
+      const res = await nokosAPI.cancelOrder(orderId, { userId: user?.userId });
       if (res.data.success) {
         setIsCancelled(true);
         toast.success(res.data.message);
         
-        // Refresh balance if user is logged in
         if (user) {
           try {
             const profileRes = await axios.get(`${API_URL}/api/auth/profile/${user.userId}`);
@@ -198,7 +208,7 @@ const TelegramPage = () => {
     if (step > 1 && step < 4) {
       setStep(step - 1);
     } else if (step === 4) {
-      navigate('/'); // Or warn before leaving
+      navigate('/'); 
     } else {
       navigate('/');
     }
@@ -213,8 +223,8 @@ const TelegramPage = () => {
             <ArrowLeft className="w-6 h-6 text-white" />
           </button>
           <div className="flex items-center gap-2">
-            <Phone className="w-8 h-8 text-blue-400" />
-            <h1 className="text-2xl font-bold text-white">Beli Telegram OLD</h1>
+            <IconComponent className={`w-8 h-8 ${currentService.color}`} />
+            <h1 className="text-2xl font-bold text-white">{currentService.title}</h1>
           </div>
         </div>
 
@@ -224,7 +234,7 @@ const TelegramPage = () => {
           {/* Step 1: Select Country */}
           {step === 1 && (
             <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 md:p-8">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-6">Pilih Negara Telegram</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-6">Pilih Negara {currentService.title}</h2>
               {loading ? (
                 <div className="flex justify-center items-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
@@ -296,7 +306,7 @@ const TelegramPage = () => {
           {/* Step 3: Confirmation */}
           {step === 3 && (
             <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 md:p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">Detail Order Telegram</h2>
+              <h2 className="text-2xl font-bold text-white mb-6">Detail Order {currentService.title}</h2>
               <div className="space-y-4 mb-8">
                 <div>
                   <p className="text-gray-400 text-sm">Negara</p>
@@ -335,7 +345,7 @@ const TelegramPage = () => {
                 <div>
                   <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                   <h2 className="text-2xl font-bold text-white mb-2">Berhasil!</h2>
-                  <p className="text-gray-300 mb-6">Nomor Telegram dan Kode OTP siap digunakan.</p>
+                  <p className="text-gray-300 mb-6">Nomor Telepon dan Kode OTP siap digunakan.</p>
                   
                   <div className="bg-gray-900/50 p-6 rounded-xl inline-block text-left w-full max-w-sm border border-gray-700">
                     <p className="text-gray-400 text-sm">Nomor Telepon:</p>
@@ -396,4 +406,4 @@ const TelegramPage = () => {
   );
 };
 
-export default TelegramPage;
+export default NokosPage;
