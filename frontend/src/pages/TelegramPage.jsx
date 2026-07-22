@@ -2,21 +2,21 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Phone, MessageSquare, Mail, ArrowLeft, Loader2, CreditCard, Coins, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { nokosAPI } from '../services/api'; // Sesuaikan dengan path service API Anda
+import { telegramAPI } from '../services/api'; // Menggunakan kembali telegramAPI Anda yang sudah ada
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-// Konfigurasi jenis layanan nokos
+// Konfigurasi dinamis untuk berbagai jenis layanan nokos
 const serviceConfig = {
   telegram: { title: 'Beli Telegram OLD', icon: Phone, color: 'text-blue-400' },
   whatsapp: { title: 'Beli WhatsApp OTP', icon: MessageSquare, color: 'text-green-400' },
   gmail: { title: 'Beli Akun Gmail', icon: Mail, color: 'text-red-400' },
 };
 
-const NokosPage = () => {
+const TelegramPage = () => {
   const navigate = useNavigate();
-  const { serviceName = 'telegram' } = useParams(); // Default ke telegram jika parameter kosong
+  const { serviceName = 'telegram' } = useParams(); // Mengambil parameter layanan dari URL (jika ada)
   const currentService = serviceConfig[serviceName] || serviceConfig['telegram'];
   const IconComponent = currentService.icon;
 
@@ -47,8 +47,9 @@ const NokosPage = () => {
   const fetchCountries = async () => {
     setLoading(true);
     try {
-      // Mengirim serviceName agar API backend mengambil data sesuai layanan (Telegram, WA, dll)
-      const response = await nokosAPI.getCountries(serviceName);
+      // Jika backend Anda mendukung parameter jenis layanan, kirim serviceName. 
+      // Jika backend Anda hanya untuk Telegram, fungsi ini akan tetap aman berjalan.
+      const response = await telegramAPI.getCountries(serviceName);
       if (response.data.success) {
         setCountries(response.data.data);
       }
@@ -89,7 +90,7 @@ const NokosPage = () => {
 
       if (paymentMethod === 'balance') {
         payload.userId = user.userId;
-        const response = await nokosAPI.createWithBalance(payload);
+        const response = await telegramAPI.createWithBalance(payload);
         
         if (response.data.success) {
           const result = response.data.data;
@@ -104,7 +105,7 @@ const NokosPage = () => {
       } else {
         // QRIS
         if (user) payload.userId = user.userId;
-        const response = await nokosAPI.create(payload);
+        const response = await telegramAPI.create(payload);
         if (response.data.success) {
           setOrderData(response.data.data);
           setStep(4); 
@@ -122,7 +123,7 @@ const NokosPage = () => {
     setPollingStatus('payment');
     const interval = setInterval(async () => {
       try {
-        const res = await nokosAPI.checkStatus(orderId);
+        const res = await telegramAPI.checkStatus(orderId);
         const data = res.data.data;
         if (data.status === 'waiting_code') {
           clearInterval(interval);
@@ -158,7 +159,7 @@ const NokosPage = () => {
       }
 
       try {
-        const res = await nokosAPI.getCode(orderId);
+        const res = await telegramAPI.getCode(orderId);
         const data = res.data.data;
         if (data.state === 'ok' && data.code) {
           clearInterval(interval);
@@ -182,7 +183,7 @@ const NokosPage = () => {
 
   const cancelOrder = async (orderId) => {
     try {
-      const res = await nokosAPI.cancelOrder(orderId, { userId: user?.userId });
+      const res = await telegramAPI.cancelOrder(orderId, { userId: user?.userId });
       if (res.data.success) {
         setIsCancelled(true);
         toast.success(res.data.message);
@@ -406,4 +407,4 @@ const NokosPage = () => {
   );
 };
 
-export default NokosPage;
+export default TelegramPage;
