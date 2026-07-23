@@ -1,4 +1,4 @@
-Import '../config/env.js'; // Load env first!
+import '../config/env.js'; // Load env first!
 import axios from 'axios';
 
 const OKECONNECT_BASE_URL = 'https://b2b.okeconnect.com/trx-v2';
@@ -67,9 +67,12 @@ class OkeConnectService {
         return priceA - priceB;
       });
 
-      // Map ke format yang dibutuhkan + add profit + filter maksimal 500k
+      // Map ke format yang dibutuhkan + filter ketat maksimal basePrice 500.000
       return filteredProducts
-        .filter(item => item.status === '1') // Only available products
+        .filter(item => {
+          const basePrice = Number(item.harga.replace(/[^0-9.-]+/g, ''));
+          return item.status === '1' && basePrice <= 500000; // Filter status aktif dan harga <= 500k sekaligus
+        })
         .map(item => {
           const basePrice = Number(item.harga.replace(/[^0-9.-]+/g, ''));
           const profit = this.calculateProfit(basePrice);
@@ -94,8 +97,7 @@ class OkeConnectService {
             status: item.status,
             category: item.kategori
           };
-        })
-        .filter(item => item.basePrice <= 500000); // Batasi maksimal basePrice 500k
+        });
 
     } catch (error) {
       console.error('OkeConnect Get Products Error:', error.message);
@@ -162,7 +164,7 @@ class OkeConnectService {
     const products = fallbackData[ewalletType.toLowerCase()] || [];
     
     return products
-      .filter(item => item.base <= 500000) // Batasi maksimal base 500k pada fallback
+      .filter(item => item.base <= 500000)
       .map(item => {
         const profit = this.calculateProfit(item.base);
         const finalPrice = item.base + profit;
