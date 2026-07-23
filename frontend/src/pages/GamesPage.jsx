@@ -428,4 +428,4 @@ const TopupPage = () => {
   );
 };
 
-export default TopupPage;
+export default GamesPage;
