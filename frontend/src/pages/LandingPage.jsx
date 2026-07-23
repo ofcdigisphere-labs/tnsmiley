@@ -51,7 +51,7 @@ const LandingPage = () => {
               </button>
             ) : (
               <button
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/login')}
                 className="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-lg shadow-red-600/30"
               >
                 <Store className="w-4 h-4" />
