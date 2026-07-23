@@ -6,6 +6,9 @@ import PaymentPage from './pages/PaymentPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import GamesPage from './pages/GamesPage';
+import PulsaPage from './pages/PulsaPage';
+import InternetPage from './pages/InternetPage';
 import TelegramPage from './pages/TelegramPage';
 
 function App() {
@@ -18,6 +21,9 @@ function App() {
         <Route path="/telegram" element={<TelegramPage />} />
         <Route path="/payment/:orderId" element={<PaymentPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/games" element={<GamesPage />} />
+        <Route path="/pulsa" element={<PulsaPage />} />
+        <Route path="/internet" element={<InternetPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
