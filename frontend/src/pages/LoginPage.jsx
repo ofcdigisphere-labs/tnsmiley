@@ -49,7 +49,7 @@ const LoginPage = () => {
         {/* Login Card */}
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl">
           <h2 className="text-xl md:text-2xl font-bold text-white mb-2 text-center">
-            Login Paged
+            Login Pages
           </h2>
           <p className="text-xs text-gray-400 text-center mb-6">
             Masuk ke panel akun Scan N Go Anda
@@ -64,7 +64,7 @@ const LoginPage = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="email@example.com"
+                  placeholder="Masukkan Alamat Emailmu"
                   className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
                   required
                 />
@@ -106,7 +106,7 @@ const LoginPage = () => {
             <p className="text-sm text-gray-300">
               Belum punya akun?{' '}
               <Link to="https://wa.me/62895412898210" className="text-red-400 hover:text-red-300 font-semibold transition">
-                Register Via Admin
+                Daftar Akun
               </Link>
             </p>
           </div>
