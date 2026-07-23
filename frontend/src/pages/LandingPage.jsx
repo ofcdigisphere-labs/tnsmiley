@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Wallet, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi } from 'lucide-react';
+import { Wallet, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const LandingPage = () => {
@@ -12,32 +12,12 @@ const LandingPage = () => {
     setIsLoggedIn(!!userData);
   }, []);
 
-  // Daftar kategori layanan (Games, Pulsa, Paket Data, E-Wallet)
   const categories = [
-    {
-      title: 'Games',
-      description: 'Top up game populer dengan cepat dan aman',
-      icon: <Gamepad2 className="w-10 h-10 text-purple-400" />,
-      path: '/games',
-    },
-    {
-      title: 'Pulsa',
-      description: 'Isi ulang pulsa semua operator seluler',
-      icon: <Smartphone className="w-10 h-10 text-purple-400" />,
-      path: '/pulsa',
-    },
-    {
-      title: 'Paket Data',
-      description: 'Kuota internet murah untuk berbagai provider',
-      icon: <Wifi className="w-10 h-10 text-purple-400" />,
-      path: '/paket-data',
-    },
-    {
-      title: 'E-Wallet',
-      description: 'Topup DANA, OVO, GoPay, & ShopeePay instan',
-      icon: <Wallet className="w-10 h-10 text-purple-400" />,
-      path: '/topup',
-    },
+    { name: 'Games', icon: <Gamepad2 className="w-8 h-8 text-purple-400" />, path: '/games', desc: 'Topup game favoritmu' },
+    { name: 'Pulsa', icon: <Smartphone className="w-8 h-8 text-purple-400" />, path: '/pulsa', desc: 'Isi pulsa semua operator' },
+    { name: 'Paket Data', icon: <Wifi className="w-8 h-8 text-purple-400" />, path: '/paket-data', desc: 'Internet murah & cepat' },
+    { name: 'E-Wallet', icon: <Wallet className="w-8 h-8 text-purple-400" />, path: '/topup', desc: 'DANA, OVO, GoPay, ShopeePay' },
+    { name: 'Telegram', icon: <Send className="w-8 h-8 text-purple-400" />, path: '/telegram', desc: 'Beli akun & kebutuhan Telegram' },
   ];
 
   return (
@@ -83,46 +63,30 @@ const LandingPage = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 px-4">
             Platform Transaksi
-            <span className="text-purple-400"> Serba Ada</span>
+            <span className="text-purple-400"> Instant</span>
           </h2>
-          <p className="text-base md:text-xl text-gray-300 mb-6 md:mb-8 px-4">
-            Solusi cepat dan aman untuk Games, Pulsa, Paket Data, dan E-Wallet menggunakan QRIS
+          <p className="text-base md:text-xl text-gray-300 mb-8 md:mb-12 px-4">
+            Layanan topup game, pulsa, paket data, e-wallet, dan produk digital terlengkap dengan QRIS
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => navigate('/topup')}
-              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold transition transform hover:scale-105"
-            >
-              Mulai Transaksi
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-            </button>
-            <button
-              onClick={() => navigate('/telegram')}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold transition transform hover:scale-105"
-            >
-              Beli Telegram OLD
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-            </button>
-          </div>
         </div>
 
-        {/* Layanan Grid (Games, Pulsa, Paket Data, E-Wallet) */}
-        <div className="mt-16 md:mt-20">
-          <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-8 px-4">
-            Pilih Layanan Kami
+        {/* Categories Grid (LapakGaming Style) */}
+        <div className="mt-8 mb-16 md:mt-12 md:mb-20">
+          <h3 className="text-xl md:text-2xl font-bold text-white text-center mb-6 md:mb-8 px-4">
+            Kategori Layanan
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-            {categories.map((item, index) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6 px-2">
+            {categories.map((cat) => (
               <div
-                key={index}
-                onClick={() => navigate(item.path)}
-                className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center cursor-pointer hover:bg-white/20 hover:border-purple-400 transition transform hover:-translate-y-1 shadow-lg"
+                key={cat.name}
+                onClick={() => navigate(cat.path)}
+                className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-5 text-center hover:bg-white/20 transition cursor-pointer flex flex-col items-center justify-center group transform hover:scale-105"
               >
-                <div className="p-4 bg-purple-900/40 rounded-2xl mb-4">
-                  {item.icon}
+                <div className="mb-3 p-3 bg-white/5 rounded-full group-hover:bg-purple-600/20 transition">
+                  {cat.icon}
                 </div>
-                <h4 className="text-xl font-bold text-white mb-2">{item.title}</h4>
-                <p className="text-sm text-gray-300">{item.description}</p>
+                <h4 className="text-base md:text-lg font-bold text-white mb-1">{cat.name}</h4>
+                <p className="text-xs text-gray-300 line-clamp-2">{cat.desc}</p>
               </div>
             ))}
           </div>
@@ -143,14 +107,14 @@ const LandingPage = () => {
           <FeatureCard
             icon={<Wallet className="w-12 h-12 text-purple-400" />}
             title="Multi Layanan"
-            description="Support berbagai jenis kebutuhan digital dalam satu platform"
+            description="Berbagai kebutuhan digital lengkap tersedia dalam satu platform"
           />
         </div>
       </div>
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center text-gray-400 border-t border-white/10">
-        <p>&copy; 2024 PayQRIS. All rights reserved.</p>
+        <p>&copy; 2026 PayQRIS. All rights reserved.</p>
       </footer>
     </div>
   );
