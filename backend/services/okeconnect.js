@@ -67,12 +67,9 @@ class OkeConnectService {
         return priceA - priceB;
       });
 
-      // Map ke format yang dibutuhkan + filter ketat maksimal basePrice 500.000
+      // Map ke format yang dibutuhkan + add profit
       return filteredProducts
-        .filter(item => {
-          const basePrice = Number(item.harga.replace(/[^0-9.-]+/g, ''));
-          return item.status === '1' && basePrice <= 500000; // Filter status aktif dan harga <= 500k sekaligus
-        })
+        .filter(item => item.status === '1') // Only available products
         .map(item => {
           const basePrice = Number(item.harga.replace(/[^0-9.-]+/g, ''));
           const profit = this.calculateProfit(basePrice);
@@ -97,7 +94,8 @@ class OkeConnectService {
             status: item.status,
             category: item.kategori
           };
-        });
+        })
+        .filter(item => item.basePrice <= 500000); // Batasi maksimal sampai 500k saja di sini tanpa merusak struktur asli
 
     } catch (error) {
       console.error('OkeConnect Get Products Error:', error.message);
@@ -163,24 +161,22 @@ class OkeConnectService {
 
     const products = fallbackData[ewalletType.toLowerCase()] || [];
     
-    return products
-      .filter(item => item.base <= 500000)
-      .map(item => {
-        const profit = this.calculateProfit(item.base);
-        const finalPrice = item.base + profit;
+    return products.map(item => {
+      const profit = this.calculateProfit(item.base);
+      const finalPrice = item.base + profit;
 
-        return {
-          productCode: item.code,
-          productName: item.name,
-          amount: finalPrice,
-          basePrice: item.base,
-          profit: profit,
-          label: `Rp ${finalPrice.toLocaleString('id-ID')}`,
-          description: item.name,
-          status: '1',
-          category: 'DOMPET DIGITAL'
-        };
-      });
+      return {
+        productCode: item.code,
+        productName: item.name,
+        amount: finalPrice,
+        basePrice: item.base,
+        profit: profit,
+        label: `Rp ${finalPrice.toLocaleString('id-ID')}`,
+        description: item.name,
+        status: '1',
+        category: 'DOMPET DIGITAL'
+      };
+    });
   }
 
   async processTopup(productCode, destination, refId) {
