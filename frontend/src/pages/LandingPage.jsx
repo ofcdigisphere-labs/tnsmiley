@@ -26,7 +26,7 @@ const LandingPage = () => {
   const serviceCategories = [
     { title: 'Games', icon: <Gamepad2 className="w-8 h-8 text-red-400" />, path: '/games', desc: 'Topup Voucher Game' },
     { title: 'Pulsa', icon: <Smartphone className="w-8 h-8 text-red-400" />, path: '/pulsa', desc: 'Semua Operator Seluler' },
-    { title: 'Paket Data', icon: <Wifi className="w-8 h-8 text-red-400" />, path: '/data', desc: 'Internet & Kuota Murah' },
+    { title: 'Paket Data', icon: <Wifi className="w-8 h-8 text-red-400" />, path: '/internet', desc: 'Internet & Kuota Murah' },
     { title: 'E-Wallet', icon: <Wallet className="w-8 h-8 text-red-400" />, path: '/topup', desc: 'DANA, OVO, GoPay, dll' },
     { title: 'Telegram', icon: <MessageSquare className="w-8 h-8 text-red-400" />, path: '/telegram', desc: 'Akun Luar Negri' },
   ];
