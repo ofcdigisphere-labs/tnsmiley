@@ -2,46 +2,47 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gamepad2, ArrowLeft, Loader2, CreditCard, Coins } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { topupAPI } from '../services/api'; // Anda bisa sesuaikan dengan gamesAPI jika ada di api.js
+import { topupAPI } from '../services/api'; // Sesuaikan jika Anda punya gamesAPI khusus
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+// Daftar Game (Bisa disesuaikan dengan produk game Anda)
 const GAMES = [
   { 
     id: 'mobile-legends', 
     name: 'Mobile Legends', 
-    color: 'from-blue-600 to-indigo-600',
-    logo: 'https://placehold.co/100x100/blue/white?text=MLBB', // Ganti dengan URL logo resmi game
-    needZoneId: true 
+    publisher: 'Moonton',
+    color: 'from-blue-600 to-indigo-700', 
+    logo: 'https://cdn1.codashop.com/S/content/common/images/mkt-default/MLBB_Square_Thumbnail.jpg' 
   },
   { 
     id: 'free-fire', 
     name: 'Free Fire', 
-    color: 'from-amber-500 to-orange-600',
-    logo: 'https://placehold.co/100x100/orange/white?text=FF',
-    needZoneId: false 
+    publisher: 'Garena',
+    color: 'from-orange-500 to-amber-600', 
+    logo: 'https://cdn1.codashop.com/S/content/common/images/mkt-default/ff-square.jpg' 
   },
   { 
     id: 'pubg-mobile', 
     name: 'PUBG Mobile', 
-    color: 'from-yellow-600 to-amber-700',
-    logo: 'https://placehold.co/100x100/yellow/white?text=PUBG',
-    needZoneId: false 
+    publisher: 'Level Infinite',
+    color: 'from-yellow-600 to-amber-700', 
+    logo: 'https://cdn1.codashop.com/S/content/common/images/mkt-default/pubg-square.jpg' 
   },
   { 
     id: 'genshin-impact', 
     name: 'Genshin Impact', 
-    color: 'from-sky-500 to-blue-700',
-    logo: 'https://placehold.co/100x100/sky/white?text=GI',
-    needZoneId: true 
+    publisher: 'HoYoverse',
+    color: 'from-blue-500 to-cyan-600', 
+    logo: 'https://cdn1.codashop.com/S/content/common/images/mkt-default/Genshin_Square.jpg' 
   },
   { 
     id: 'valorant', 
     name: 'Valorant', 
-    color: 'from-rose-500 to-red-600',
-    logo: 'https://placehold.co/100x100/red/white?text=VAL',
-    needZoneId: false 
+    publisher: 'Riot Games',
+    color: 'from-red-600 to-rose-700', 
+    logo: 'https://cdn1.codashop.com/S/content/common/images/mkt-default/VALORANT_Square_Thumbnail.jpg' 
   },
 ];
 
@@ -54,15 +55,14 @@ const GamesPage = () => {
   const [paymentMethod, setPaymentMethod] = useState(null); // 'qris' or 'balance'
   
   const [formData, setFormData] = useState({
-    gameId: '',
+    gameType: '',
     selectedProduct: null,
-    userIdGame: '',
-    zoneId: '',
+    userIdTarget: '', // User ID Game
+    zoneIdTarget: '', // Server / Zone ID (Opsional untuk beberapa game)
     email: '',
   });
 
   useEffect(() => {
-    // Check if user is logged in
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
@@ -70,11 +70,10 @@ const GamesPage = () => {
   }, []);
 
   const selectGame = async (game) => {
-    setFormData({ ...formData, gameId: game.id });
+    setFormData({ ...formData, gameType: game.id });
     setLoading(true);
-    
     try {
-      // Menggunakan API endpoint produk game (bisa disesuaikan dengan backend Anda)
+      // Mengambil produk berdasarkan game yang dipilih (menggunakan endpoint API yang ada)
       const response = await topupAPI.getProducts(game.id);
       setProducts(response.data.data);
       setStep(2);
@@ -88,12 +87,9 @@ const GamesPage = () => {
 
   const selectNominal = (product) => {
     setFormData({ ...formData, selectedProduct: product });
-    
-    // If user is logged in, show payment method selection
     if (user) {
       setStep(3);
     } else {
-      // Guest user, go directly to detail form
       setPaymentMethod('qris');
       setStep(3);
     }
@@ -101,56 +97,44 @@ const GamesPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.userIdGame) {
+    if (!formData.userIdTarget) {
       toast.error('User ID Game harus diisi');
       return;
     }
 
-    const currentGame = GAMES.find(g => g.id === formData.gameId);
-    if (currentGame?.needZoneId && !formData.zoneId) {
-      toast.error('Zone ID / Server ID harus diisi');
-      return;
-    }
-
     setLoading(true);
-
     try {
       const payload = {
         productCode: formData.selectedProduct.productCode,
         productName: formData.selectedProduct.productName,
         amount: formData.selectedProduct.amount,
-        targetAccount: currentGame?.needZoneId 
-          ? `${formData.userIdGame} (${formData.zoneId})` 
-          : formData.userIdGame,
+        // Menggabungkan User ID dan Zone ID jika ada
+        targetId: formData.zoneIdTarget 
+          ? `${formData.userIdTarget} (${formData.zoneIdTarget})` 
+          : formData.userIdTarget,
         email: formData.email
       };
 
       if (paymentMethod === 'balance') {
         payload.userId = user.userId;
-
         const response = await axios.post(`${API_URL}/api/topup/create-with-balance`, payload);
         
         if (response.data.success) {
           const result = response.data.data;
-          
           if (result.status === 'completed') {
-            toast.success('✅ Topup Game berhasil!');
-            
+            toast.success('✅ Pembelian game berhasil!');
             const updatedUser = { ...user, balance: result.newBalance };
             localStorage.setItem('user', JSON.stringify(updatedUser));
-            
             setTimeout(() => {
               navigate('/dashboard');
             }, 2000);
           } else if (result.status === 'failed') {
-            toast.error('❌ Topup gagal. Saldo telah dikembalikan.');
+            toast.error('❌ Transaksi gagal. Saldo telah dikembalikan.');
             navigate('/dashboard');
           }
         }
       } else {
         const response = await topupAPI.createTopup(payload);
-        
         if (response.data.success) {
           toast.success('Order game berhasil dibuat!');
           sessionStorage.setItem('orderData', JSON.stringify(response.data.data));
@@ -158,7 +142,7 @@ const GamesPage = () => {
         }
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Gagal membuat order game');
+      toast.error(error.response?.data?.message || 'Gagal memproses transaksi');
       console.error(error);
     } finally {
       setLoading(false);
@@ -173,100 +157,84 @@ const GamesPage = () => {
     }
   };
 
-  const selectedGame = GAMES.find(g => g.id === formData.gameId);
+  const selectedGame = GAMES.find(g => g.id === formData.gameType);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-950 text-white">
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={goBack}
-            className="p-2 hover:bg-white/10 rounded-lg transition"
+        <div className="flex items-center gap-3 mb-6">
+          <button 
+            onClick={goBack} 
+            className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition"
           >
-            <ArrowLeft className="w-6 h-6 text-white" />
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
           <div className="flex items-center gap-2">
-            <Gamepad2 className="w-8 h-8 text-purple-400" />
-            <h1 className="text-2xl font-bold text-white">Topup Games</h1>
+            <Gamepad2 className="w-7 h-7 text-red-500" />
+            <h1 className="text-xl font-bold text-white">Topup Games</h1>
           </div>
         </div>
 
         {/* Progress Steps */}
-        <div className="max-w-2xl mx-auto mb-8 px-2">
+        <div className="mb-8 px-1">
           <div className="flex items-center justify-between">
             {(user ? [1, 2, 3, 4] : [1, 2, 3]).map((num) => (
               <div key={num} className="flex items-center flex-1 last:flex-initial">
-                <div
-                  className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base transition ${
-                    step >= num
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white/10 text-gray-400'
-                  }`}
-                >
+                <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition ${
+                  step >= num 
+                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' 
+                    : 'bg-white/5 border border-white/10 text-gray-400'
+                }`}>
                   {num}
                 </div>
                 {((user && num < 4) || (!user && num < 3)) && (
-                  <div
-                    className={`flex-1 h-1 mx-1 md:mx-2 ${
-                      step > num ? 'bg-purple-600' : 'bg-white/10'
-                    }`}
-                  />
+                  <div className={`flex-1 h-1 mx-1 sm:mx-2 rounded-full ${
+                    step > num ? 'bg-red-600' : 'bg-white/10'
+                  }`} />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-xs md:text-sm">
-            <span className={`${step >= 1 ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center md:text-left`}>
-              Game
-            </span>
-            <span className={`${step >= 2 ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center`}>
-              Nominal
-            </span>
+          <div className="flex justify-between mt-2 text-[11px] sm:text-xs">
+            <span className={`${step >= 1 ? 'text-white font-medium' : 'text-gray-400'} text-center`}>Game</span>
+            <span className={`${step >= 2 ? 'text-white font-medium' : 'text-gray-400'} text-center`}>Nominal</span>
             {user && (
-              <span className={`${step >= 3 ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center`}>
-                Metode
-              </span>
+              <span className={`${step >= 3 ? 'text-white font-medium' : 'text-gray-400'} text-center`}>Metode</span>
             )}
-            <span className={`${step >= (user ? 4 : 3) ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center md:text-right`}>
-              Detail Akun
-            </span>
+            <span className={`${step >= (user ? 4 : 3) ? 'text-white font-medium' : 'text-gray-400'} text-center`}>Detail ID</span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="max-w-2xl mx-auto">
+        <div>
           {/* Step 1: Select Game */}
           {step === 1 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {GAMES.map((game) => (
                 <button
                   key={game.id}
                   onClick={() => selectGame(game)}
                   disabled={loading}
-                  className="aspect-square bg-white/10 backdrop-blur-lg border-2 border-white/20 hover:border-purple-400 rounded-2xl p-6 transition transform hover:scale-105 disabled:opacity-50 group"
+                  className="bg-white/5 hover:bg-white/15 active:scale-95 border border-white/10 hover:border-red-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition shadow-md group disabled:opacity-50"
                 >
-                  <div className="flex flex-col items-center justify-center h-full gap-3">
+                  <div className="relative mb-3">
                     <img 
                       src={game.logo} 
-                      alt={game.name}
-                      className="w-20 h-20 object-contain rounded-xl"
+                      alt={game.name} 
+                      className="w-14 h-14 object-cover rounded-xl shadow-inner"
                       onError={(e) => {
                         e.target.style.display = 'none';
                         e.target.nextSibling.style.display = 'flex';
                       }}
                     />
-                    <div 
-                      className={`hidden w-20 h-20 bg-gradient-to-br ${game.color} rounded-xl items-center justify-center`}
-                    >
-                      <span className="text-white font-bold text-xl">
-                        {game.name.charAt(0)}
-                      </span>
+                    <div className={`hidden w-14 h-14 bg-gradient-to-br ${game.color} rounded-xl items-center justify-center`}>
+                      <span className="text-white font-bold text-lg">{game.name.charAt(0)}</span>
                     </div>
-                    <p className="text-white font-semibold text-center text-sm md:text-base group-hover:text-purple-300 transition">
-                      {game.name}
-                    </p>
                   </div>
+                  <p className="font-bold text-sm text-white group-hover:text-red-400 transition line-clamp-1">{game.name}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{game.publisher}</p>
                 </button>
               ))}
             </div>
@@ -274,23 +242,19 @@ const GamesPage = () => {
 
           {/* Step 2: Select Nominal */}
           {step === 2 && (
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">
-                Pilih Nominal {selectedGame?.name}
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-4">Pilih Item / Nominal {selectedGame?.name}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {products.map((product) => (
                   <button
                     key={product.productCode}
                     onClick={() => selectNominal(product)}
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl p-6 text-left transition"
+                    className="bg-white/5 hover:bg-white/15 active:scale-98 border border-white/10 hover:border-red-500/50 rounded-xl p-4 text-left transition group"
                   >
-                    <p className="text-white font-semibold text-lg mb-1">
+                    <p className="font-bold text-sm sm:text-base text-white group-hover:text-red-400 mb-1">
                       {product.label}
                     </p>
-                    <p className="text-gray-400 text-sm line-clamp-2">
-                      {product.productName}
-                    </p>
+                    <p className="text-gray-400 text-xs line-clamp-2">{product.productName}</p>
                   </button>
                 ))}
               </div>
@@ -299,11 +263,11 @@ const GamesPage = () => {
 
           {/* Step 3: Select Payment Method (Only for logged in users) */}
           {step === 3 && user && (
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-2">Pilih Metode Pembayaran</h2>
-              <p className="text-gray-400 mb-6">Saldo Anda: Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-1">Pilih Metode Pembayaran</h2>
+              <p className="text-xs sm:text-sm text-gray-400 mb-5">Saldo Anda: Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
               
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 <button
                   onClick={() => {
                     if ((user.balance || 0) < formData.selectedProduct.amount) {
@@ -314,18 +278,20 @@ const GamesPage = () => {
                     setStep(4);
                   }}
                   disabled={(user.balance || 0) < formData.selectedProduct.amount}
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:opacity-50 p-6 rounded-xl text-white transition flex items-center justify-between"
+                  className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 disabled:from-gray-700 disabled:to-gray-800 disabled:opacity-50 disabled:cursor-not-allowed p-4 rounded-xl text-white transition flex items-center justify-between shadow-lg"
                 >
-                  <div className="flex items-center gap-4">
-                    <Coins className="w-10 h-10" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white/10 rounded-lg">
+                      <Coins className="w-6 h-6" />
+                    </div>
                     <div className="text-left">
-                      <p className="font-bold text-xl">Saldo</p>
-                      <p className="text-sm opacity-90">Bayar menggunakan saldo akun</p>
+                      <p className="font-bold text-sm sm:text-base">Saldo Akun</p>
+                      <p className="text-[11px] sm:text-xs opacity-90">Potong saldo instan</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm opacity-75">Saldo Anda</p>
-                    <p className="font-bold text-lg">Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
+                    <p className="text-[10px] sm:text-xs opacity-75">Tersedia</p>
+                    <p className="font-bold text-xs sm:text-sm">Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
                   </div>
                 </button>
 
@@ -334,103 +300,110 @@ const GamesPage = () => {
                     setPaymentMethod('qris');
                     setStep(4);
                   }}
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 p-6 rounded-xl text-white transition flex items-center gap-4"
+                  className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 p-4 rounded-xl text-white transition flex items-center gap-3 shadow-lg shadow-red-600/20"
                 >
-                  <CreditCard className="w-10 h-10" />
+                  <div className="p-2 bg-white/10 rounded-lg">
+                    <CreditCard className="w-6 h-6" />
+                  </div>
                   <div className="text-left">
-                    <p className="font-bold text-xl">QRIS</p>
-                    <p className="text-sm opacity-90">Bayar dengan scan QR code</p>
+                    <p className="font-bold text-sm sm:text-base">QRIS Instant</p>
+                    <p className="text-[11px] sm:text-xs opacity-90">Scan QR code via semua e-wallet/bank</p>
                   </div>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Input Game ID Details */}
+          {/* Step 4 (Logged in) OR Step 3 (Guest): Input Target ID Game */}
           {((step === 4 && user) || (step === 3 && !user)) && (
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">Detail Tujuan Game</h2>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-4">Masukkan Tujuan Akun Game</h2>
               
-              <div className="space-y-4 mb-6">
-                <div>
-                  <p className="text-gray-400 text-sm">Game</p>
-                  <p className="text-white font-semibold text-lg">{selectedGame?.name}</p>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2 mb-5">
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gray-400">Game</span>
+                  <span className="text-white font-semibold">{selectedGame?.name}</span>
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Item / Nominal</p>
-                  <p className="text-white font-semibold text-lg">{formData.selectedProduct?.productName}</p>
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gray-400">Item</span>
+                  <span className="text-white font-semibold text-right max-w-[200px] truncate">
+                    {formData.selectedProduct?.productName}
+                  </span>
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Harga</p>
-                  <p className="text-white font-semibold text-lg">Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}</p>
+                <div className="flex justify-between text-xs sm:text-sm border-t border-white/10 pt-2">
+                  <span className="text-gray-400">Total Harga</span>
+                  <span className="text-red-400 font-bold">
+                    Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}
+                  </span>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {paymentMethod === 'balance' && (
-                  <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 mb-4">
-                    <p className="text-yellow-300 text-sm">
-                      ⚠️ Saldo sebesar <strong>Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}</strong> akan dipotong.
-                    </p>
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-amber-300 text-xs flex items-center gap-2">
+                    <span>⚠️ Saldo akun sebesar <strong>Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}</strong> akan langsung dipotong.</span>
                   </div>
                 )}
 
-                <div className={selectedGame?.needZoneId ? "grid grid-cols-2 gap-4" : ""}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-white mb-2">User ID *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5">
+                      User ID *
+                    </label>
                     <input
                       type="text"
-                      value={formData.userIdGame}
-                      onChange={(e) => setFormData({ ...formData, userIdGame: e.target.value })}
-                      placeholder="Masukkan User ID"
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      value={formData.userIdTarget}
+                      onChange={(e) => setFormData({ ...formData, userIdTarget: e.target.value })}
+                      placeholder="Contoh: 12345678"
+                      className="w-full bg-white/5 border border-white/10 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition"
                       required
                     />
                   </div>
-
-                  {selectedGame?.needZoneId && (
-                    <div>
-                      <label className="block text-white mb-2">Zone ID / Server *</label>
-                      <input
-                        type="text"
-                        value={formData.zoneId}
-                        onChange={(e) => setFormData({ ...formData, zoneId: e.target.value })}
-                        placeholder="Contoh: 1234"
-                        className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        required
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5">
+                      Server / Zone ID (Opsional)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.zoneIdTarget}
+                      onChange={(e) => setFormData({ ...formData, zoneIdTarget: e.target.value })}
+                      placeholder="Contoh: 1234"
+                      className="w-full bg-white/5 border border-white/10 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-white mb-2">Email (Opsional)</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5">
+                    Email (Opsional - untuk bukti transaksi)
+                  </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="email@example.com"
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-white/5 border border-white/10 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full bg-red-600 hover:bg-red-700 active:scale-98 text-white font-semibold py-3.5 rounded-xl text-sm transition shadow-lg shadow-red-600/30 disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Memproses...
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Memproses...</span>
                     </>
                   ) : (
-                    paymentMethod === 'balance' ? 'Proses Topup Game' : 'Lanjut Pembayaran'
+                    <span>{paymentMethod === 'balance' ? 'Proses Topup Game' : 'Lanjut ke Pembayaran QRIS'}</span>
                   )}
                 </button>
               </form>
             </div>
           )}
+
         </div>
       </div>
     </div>
