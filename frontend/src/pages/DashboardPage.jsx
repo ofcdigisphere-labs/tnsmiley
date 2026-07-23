@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   QrCode, LogOut, Copy, RefreshCw, BarChart3, 
   CheckCircle, Clock, XCircle, Eye, EyeOff,
-  Smartphone, MessageCircle, Server
+  Smartphone, MessageCircle, Server, Wallet
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -108,11 +108,11 @@ const DashboardPage = () => {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <QrCode className="w-7 h-7 text-red-500" />
-            <h1 className="text-xl font-extrabold tracking-wider text-white">Scan N Go Dashboard</h1>
+            <h1 className="text-xl font-extrabold tracking-wider text-white">Scan N Go</h1>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 text-gray-300 hover:text-red-400 text-sm font-medium transition"
+            className="flex items-center gap-1.5 text-gray-300 hover:text-red-400 transition text-sm font-medium"
           >
             <LogOut className="w-4 h-4" />
             Logout
@@ -122,58 +122,67 @@ const DashboardPage = () => {
 
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         {/* Welcome Section */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-2xl p-6">
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-2xl p-5 shadow-lg">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">
-              Selamat datang, {user.name}!
+            <h2 className="text-2xl font-bold text-white mb-1">
+              Halo {user.name}!
             </h2>
             <p className="text-gray-400 text-sm">
               {user.businessName || 'Merchant Dashboard'}
             </p>
           </div>
-          <div className="text-left md:text-right bg-red-500/10 border border-red-500/20 px-4 py-3 rounded-xl">
-            <p className="text-gray-400 text-xs">Saldo Anda</p>
-            <p className="text-2xl md:text-3xl font-bold text-red-400">
-              Rp {(user.balance || 0).toLocaleString('id-ID')}
-            </p>
+          <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-4 md:pt-0 border-white/10">
+            <div className="text-left md:text-right">
+              <p className="text-gray-400 text-xs">Saldo Anda</p>
+              <p className="text-2xl md:text-3xl font-extrabold text-green-400">
+                Rp {(user.balance || 0).toLocaleString('id-ID')}
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/topup')}
+              className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow-lg shadow-red-600/30 shrink-0"
+            >
+              <Wallet className="w-4 h-4" />
+              Withdraw
+            </button>
           </div>
         </div>
 
         {/* API Key Card */}
-        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-8 shadow-xl">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 md:p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-white">API Key</h3>
             <div className="flex gap-1.5">
               <button
                 onClick={() => setShowApiKey(!showApiKey)}
-                className="p-2 hover:bg-white/10 rounded-xl transition"
+                className="p-2 hover:bg-white/10 rounded-xl transition text-gray-300"
                 title={showApiKey ? 'Hide' : 'Show'}
               >
                 {showApiKey ? (
-                  <EyeOff className="w-4 h-4 text-white" />
+                  <EyeOff className="w-4 h-4" />
                 ) : (
-                  <Eye className="w-4 h-4 text-white" />
+                  <Eye className="w-4 h-4" />
                 )}
               </button>
               <button
                 onClick={copyApiKey}
-                className="p-2 hover:bg-white/10 rounded-xl transition"
+                className="p-2 hover:bg-white/10 rounded-xl transition text-gray-300"
                 title="Copy"
               >
-                <Copy className="w-4 h-4 text-white" />
+                <Copy className="w-4 h-4" />
               </button>
               <button
                 onClick={regenerateApiKey}
-                className="p-2 hover:bg-white/10 rounded-xl transition"
+                className="p-2 hover:bg-white/10 rounded-xl transition text-gray-300"
                 title="Regenerate"
               >
-                <RefreshCw className="w-4 h-4 text-white" />
+                <RefreshCw className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          <div className="bg-black/40 rounded-xl p-4 border border-white/5">
-            <code className="text-red-300 font-mono text-xs md:text-sm break-all">
+          <div className="bg-black/40 rounded-xl p-3.5 border border-white/5">
+            <code className="text-white font-mono text-xs md:text-sm break-all">
               {showApiKey ? user.apiKey : user.apiKey.replace(/./g, '*')}
             </code>
           </div>
@@ -184,7 +193,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           <StatCard
             icon={<BarChart3 className="w-5 h-5 text-blue-400" />}
             title="Total Transaksi"
@@ -212,7 +221,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Transaction History */}
-        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-4 md:p-6 mb-8 shadow-xl">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 mb-8">
           <h3 className="text-lg font-bold text-white mb-4">Riwayat Transaksi</h3>
           
           {transactions.length === 0 ? (
@@ -246,7 +255,7 @@ const DashboardPage = () => {
                       </td>
                       <td className="py-3 px-3 text-white font-medium">Rp {tx.amount.toLocaleString('id-ID')}</td>
                       <td className="py-3 px-3 text-gray-300 uppercase text-[10px]">{tx.method}</td>
-                      <td className="py-3 px-3 text-gray-400">
+                      <td className="py-3 px-3 text-gray-400 text-[11px]">
                         {new Date(tx.date).toLocaleString('id-ID', {
                           day: '2-digit', month: 'short', year: 'numeric',
                           hour: '2-digit', minute: '2-digit'
@@ -257,7 +266,7 @@ const DashboardPage = () => {
                         {tx.status === 'processing' && <span className="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-medium border border-blue-500/20">Proses</span>}
                         {tx.status === 'waiting_code' && <span className="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-medium border border-blue-500/20">Nunggu OTP</span>}
                         {tx.status === 'pending' && <span className="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-[10px] font-medium border border-yellow-500/20">Pending</span>}
-                        {['failed', 'expired', 'cancelled'].includes(tx.status) && <span className="bg-red-500/20 text-red-400 px-2 py-0.5 rounded text-[10px] font-medium border border-red-500/20">Gagal/Batal</span>}
+                        {['failed', 'expired', 'cancelled'].includes(tx.status) && <span className="bg-red-500/20 text-red-400 px-2 py-0.5 rounded text-[10px] font-medium border border-red-500/20">Gagal</span>}
                       </td>
                     </tr>
                   ))}
@@ -273,14 +282,14 @@ const DashboardPage = () => {
         </div>
 
         {/* API Documentation Card */}
-        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-4 md:p-6 shadow-xl">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6">
           <h3 className="text-lg font-bold text-white mb-4">Dokumentasi API Payment Gateway</h3>
           
           <div className="space-y-4 text-xs md:text-sm">
             <div className="bg-black/40 rounded-xl p-3 md:p-4 border border-white/5">
               <h4 className="text-white font-semibold mb-2">1. Generate QRIS Payment</h4>
-              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto border border-white/5">
-                <code className="text-red-300 font-mono text-xs block whitespace-pre-wrap break-all">
+              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto">
+                <code className="text-red-400 font-mono block whitespace-pre-wrap break-all">
 {`POST ${API_URL}/api/payment/create
 Headers: {
   "x-api-key": "YOUR_API_KEY",
@@ -313,8 +322,8 @@ Response: {
 
             <div className="bg-black/40 rounded-xl p-3 md:p-4 border border-white/5">
               <h4 className="text-white font-semibold mb-2">2. Check Payment Status</h4>
-              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto border border-white/5">
-                <code className="text-red-300 font-mono text-xs block whitespace-pre-wrap">
+              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto">
+                <code className="text-red-400 font-mono block whitespace-pre-wrap">
 {`GET ${API_URL}/api/payment/status/:transactionId
 Headers: {
   "x-api-key": "YOUR_API_KEY"
@@ -337,8 +346,8 @@ Response: {
 
             <div className="bg-black/40 rounded-xl p-3 md:p-4 border border-white/5">
               <h4 className="text-white font-semibold mb-2">3. Cancel Payment</h4>
-              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto border border-white/5">
-                <code className="text-red-300 font-mono text-xs block whitespace-pre-wrap">
+              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto">
+                <code className="text-red-400 font-mono block whitespace-pre-wrap">
 {`POST ${API_URL}/api/payment/cancel/:transactionId
 Headers: {
   "x-api-key": "YOUR_API_KEY"
@@ -357,8 +366,8 @@ Response: {
 
             <div className="bg-black/40 rounded-xl p-3 md:p-4 border border-white/5">
               <h4 className="text-white font-semibold mb-2">4. Get Transaction History</h4>
-              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto border border-white/5">
-                <code className="text-red-300 font-mono text-xs block whitespace-pre-wrap">
+              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto">
+                <code className="text-red-400 font-mono block whitespace-pre-wrap">
 {`GET ${API_URL}/api/merchant/transactions?limit=50&status=completed
 Headers: {
   "x-api-key": "YOUR_API_KEY"
@@ -369,8 +378,8 @@ Headers: {
 
             <div className="bg-black/40 rounded-xl p-3 md:p-4 border border-white/5">
               <h4 className="text-white font-semibold mb-2">5. Get Statistics</h4>
-              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto border border-white/5">
-                <code className="text-red-300 font-mono text-xs block whitespace-pre-wrap">
+              <div className="bg-black/60 rounded-lg p-3 overflow-x-auto">
+                <code className="text-red-400 font-mono block whitespace-pre-wrap">
 {`GET ${API_URL}/api/merchant/stats
 Headers: {
   "x-api-key": "YOUR_API_KEY"
@@ -387,22 +396,20 @@ Headers: {
 
 const StatCard = ({ icon, title, value, color }) => {
   const colorClasses = {
-    blue: 'from-blue-500/10 to-blue-600/10 border-blue-500/20',
-    green: 'from-green-500/10 to-green-600/10 border-green-500/20',
-    yellow: 'from-yellow-500/10 to-yellow-600/10 border-yellow-500/20',
-    red: 'from-red-500/10 to-red-600/10 border-red-500/20'
+    blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+    green: 'bg-green-500/10 border-green-500/20 text-green-400',
+    yellow: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400',
+    red: 'bg-red-500/10 border-red-500/20 text-red-400'
   };
 
   return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} backdrop-blur-lg border rounded-xl p-4 shadow-md`}>
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-white/10 rounded-xl">
-          {icon}
-        </div>
-        <div>
-          <p className="text-gray-400 text-xs">{title}</p>
-          <p className="text-white text-lg md:text-xl font-bold">{value}</p>
-        </div>
+    <div className={`bg-white/5 border border-white/10 rounded-xl p-3.5 flex items-center gap-3`}>
+      <div className={`p-2.5 rounded-lg border ${colorClasses[color]} shrink-0`}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-gray-400 text-[11px]">{title}</p>
+        <p className="text-white text-lg font-bold">{value}</p>
       </div>
     </div>
   );
