@@ -130,7 +130,7 @@ const DashboardPage = () => {
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              Selamat datang, {user.name}!
+              Halo {user.name}!
             </h2>
             <p className="text-gray-300 text-sm md:text-base">
               {user.businessName || 'Merchant Dashboard'}
@@ -147,14 +147,13 @@ const DashboardPage = () => {
         {/* Quick Action Topup Button Section */}
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="text-xl font-bold text-white mb-1">Butuh Isi Saldo E-Wallet?</h3>
-            <p className="text-gray-300 text-sm">Topup DANA, OVO, GoPay, dan ShopeePay secara instan menggunakan QRIS.</p>
+            <p className="text-gray-300 text-sm">Penarikan secara instan Ke Ewallet.</p>
           </div>
           <button
             onClick={() => navigate('/topup')}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition transform hover:scale-105 shrink-0"
           >
-            Mulai Topup
+            Withdraw Saldo
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
