@@ -94,9 +94,7 @@ class OkeConnectService {
             status: item.status,
             category: item.kategori
           };
-        })
-        // 🔴 TAMBAHAN: Tampilkan hanya 10.000 s.d 500.000
-        .filter(item => item.basePrice >= 10000 && item.basePrice <= 500000);
+        });
 
     } catch (error) {
       console.error('OkeConnect Get Products Error:', error.message);
@@ -121,8 +119,6 @@ class OkeConnectService {
         { code: 'D150', name: 'DANA 150.000', base: 150000 },
         { code: 'D200', name: 'DANA 200.000', base: 200000 },
         { code: 'D300', name: 'DANA 300.000', base: 300000 },
-        { code: 'D500', name: 'DANA 500.000', base: 500000 }
-        // Semua di atas 500k dihapus
       ],
       gopay: [
         { code: 'GPY10', name: 'GoPay 10.000', base: 10000 },
@@ -132,7 +128,6 @@ class OkeConnectService {
         { code: 'GPY100', name: 'GoPay 100.000', base: 100000 },
         { code: 'GPY150', name: 'GoPay 150.000', base: 150000 },
         { code: 'GPY200', name: 'GoPay 200.000', base: 200000 },
-        { code: 'GPY500', name: 'GoPay 500.000', base: 500000 }
       ],
       ovo: [
         { code: 'OVO10', name: 'OVO 10.000', base: 10000 },
@@ -142,7 +137,6 @@ class OkeConnectService {
         { code: 'OVO100', name: 'OVO 100.000', base: 100000 },
         { code: 'OVO150', name: 'OVO 150.000', base: 150000 },
         { code: 'OVO200', name: 'OVO 200.000', base: 200000 },
-        { code: 'OVO500', name: 'OVO 500.000', base: 500000 }
       ],
       shopeepay: [
         { code: 'SHP10', name: 'ShopeePay 10.000', base: 10000 },
@@ -152,7 +146,6 @@ class OkeConnectService {
         { code: 'SHP100', name: 'ShopeePay 100.000', base: 100000 },
         { code: 'SHP150', name: 'ShopeePay 150.000', base: 150000 },
         { code: 'SHP200', name: 'ShopeePay 200.000', base: 200000 },
-        { code: 'SHP500', name: 'ShopeePay 500.000', base: 500000 }
       ],
       linkaja: [
         { code: 'LINK10', name: 'LinkAja 10.000', base: 10000 },
@@ -162,7 +155,6 @@ class OkeConnectService {
         { code: 'LINK100', name: 'LinkAja 100.000', base: 100000 },
         { code: 'LINK150', name: 'LinkAja 150.000', base: 150000 },
         { code: 'LINK200', name: 'LinkAja 200.000', base: 200000 },
-        { code: 'LINK500', name: 'LinkAja 500.000', base: 500000 }
       ]
     };
 
