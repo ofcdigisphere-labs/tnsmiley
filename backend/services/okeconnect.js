@@ -1,4 +1,4 @@
-Import '../config/env.js'; // Load env first!
+import '../config/env.js'; // Load env first!
 import axios from 'axios';
 
 const OKECONNECT_BASE_URL = 'https://b2b.okeconnect.com/trx-v2';
