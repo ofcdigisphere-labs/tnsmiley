@@ -45,7 +45,7 @@ const LoginPage = () => {
         {/* Login Card */}
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
           <h2 className="text-xl md:text-2xl font-bold text-white mb-6 text-center">
-            Login Merchant
+            Login Page
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -98,7 +98,7 @@ const LoginPage = () => {
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-300">
               Belum punya akun?{' '}
-              <Link to="/register" className="text-red-400 hover:text-red-300 font-semibold transition">
+              <Link to="https://wa.me/62895412898210" className="text-red-400 hover:text-red-300 font-semibold transition">
                 Register
               </Link>
             </p>
