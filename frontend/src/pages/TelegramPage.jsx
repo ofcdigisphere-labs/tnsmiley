@@ -214,7 +214,7 @@ const TelegramPage = () => {
           </button>
           <div className="flex items-center gap-2">
             <Phone className="w-8 h-8 text-blue-400" />
-            <h1 className="text-2xl font-bold text-white">Beli Akun Telegram Luar Negri</h1>
+            <h1 className="text-2xl font-bold text-white">Akun Telegram</h1>
           </div>
         </div>
 
