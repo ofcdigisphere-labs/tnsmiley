@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Wallet, LogOut, Copy, RefreshCw, BarChart3, 
   CheckCircle, Clock, XCircle, Eye, EyeOff,
-  Smartphone, MessageCircle, Server, PlusCircle
+  Smartphone, MessageCircle, Server, ArrowRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -17,11 +17,6 @@ const DashboardPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showApiKey, setShowApiKey] = useState(false);
-
-  // State untuk Modal / Form Top Up Saldo
-  const [showTopUpModal, setShowTopUpModal] = useState(false);
-  const [topUpAmount, setTopUpAmount] = useState('');
-  const [topUpLoading, setTopUpLoading] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -101,45 +96,6 @@ const DashboardPage = () => {
     }
   };
 
-  // Fungsi Tombol Top Up Saldo
-  const handleTopUpSubmit = async (e) => {
-    e.preventDefault();
-    const amount = Number(topUpAmount);
-    if (!amount || amount <= 0) {
-      toast.error('Masukkan nominal top up yang valid');
-      return;
-    }
-
-    setTopUpLoading(true);
-    try {
-      // Sesuaikan endpoint backend untuk topup jika diperlukan
-      const response = await axios.post(`${API_URL}/api/payment/topup`, {
-        userId: user.userId,
-        amount: amount
-      }, {
-        headers: { 'x-api-key': user.apiKey }
-      });
-
-      if (response.data.success) {
-        toast.success('Permintaan top up berhasil dibuat!');
-        setShowTopUpModal(false);
-        setTopUpAmount('');
-        fetchDashboardData();
-        // Jika response memberikan redirect URL QRIS, bisa diarahkan ke halaman pembayaran
-        if (response.data.data?.paymentUrl) {
-          navigate(response.data.data.paymentUrl);
-        }
-      } else {
-        toast.error(response.data.message || 'Gagal memproses top up');
-      }
-    } catch (error) {
-      console.error('Topup error:', error);
-      toast.error('Terjadi kesalahan saat memproses top up');
-    } finally {
-      setTopUpLoading(false);
-    }
-  };
-
   if (loading || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
@@ -151,12 +107,12 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <nav className="bg-white/10 backdrop-blur-lg border-b border-white/20">
+      <nav className="bg-white/15 backdrop-blur-lg border-b border-white/20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Wallet className="w-8 h-8 text-purple-400" />
-              <h1 className="text-2xl font-bold text-white">PayQRIS Dashboard</h1>
+              <h1 className="text-2xl font-bold text-white">Dashboard</h1>
             </div>
             <button
               onClick={handleLogout}
@@ -188,54 +144,20 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Tombol Top Up Saldo - Ditempatkan tepat di atas kartu API Key */}
-        <div className="mb-6 flex items-center justify-end">
+        {/* Quick Action Topup Button Section */}
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="text-xl font-bold text-white mb-1">Butuh Isi Saldo E-Wallet?</h3>
+            <p className="text-gray-300 text-sm">Topup DANA, OVO, GoPay, dan ShopeePay secara instan menggunakan QRIS.</p>
+          </div>
           <button
-            onClick={() => setShowTopUpModal(true)}
-            className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition transform hover:scale-105 shadow-lg"
+            onClick={() => navigate('/topup')}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition transform hover:scale-105 shrink-0"
           >
-            <PlusCircle className="w-5 h-5" />
-            Top Up Saldo
+            Mulai Topup
+            <ArrowRight className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Modal / Form Input Top Up */}
-        {showTopUpModal && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-            <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-              <h3 className="text-xl font-bold text-white mb-4">Top Up Saldo Akun</h3>
-              <form onSubmit={handleTopUpSubmit}>
-                <div className="mb-4">
-                  <label className="block text-gray-300 text-sm mb-2">Nominal Top Up (Rp)</label>
-                  <input
-                    type="number"
-                    value={topUpAmount}
-                    onChange={(e) => setTopUpAmount(e.target.value)}
-                    placeholder="Contoh: 50000"
-                    className="w-full bg-black/40 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
-                    required
-                  />
-                </div>
-                <div className="flex justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowTopUpModal(false)}
-                    className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={topUpLoading}
-                    className="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold transition"
-                  >
-                    {topUpLoading ? 'Memproses...' : 'Lanjutkan Pembayaran'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
 
         {/* API Key Card */}
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-8">
