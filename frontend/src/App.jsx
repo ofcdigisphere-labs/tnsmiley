@@ -22,6 +22,9 @@ function App() {
         <Route path="/payment/:orderId" element={<PaymentPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/games" element={<GamesPage />} />
+        <Route path="/pulsa" element={<PulsaPage />} />
+        <Route path="/internet" element={<InternetPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </Router>
