@@ -28,7 +28,7 @@ const LandingPage = () => {
     { title: 'Pulsa', icon: <Smartphone className="w-8 h-8 text-red-400" />, path: '/pulsa', desc: 'Semua Operator Seluler' },
     { title: 'Paket Data', icon: <Wifi className="w-8 h-8 text-red-400" />, path: '/data', desc: 'Internet & Kuota Murah' },
     { title: 'E-Wallet', icon: <Wallet className="w-8 h-8 text-red-400" />, path: '/topup', desc: 'DANA, OVO, GoPay, dll' },
-    { title: 'Telegram', icon: <MessageSquare className="w-8 h-8 text-red-400" />, path: '/telegram', desc: 'Akun & Kebutuhan Bot' },
+    { title: 'Telegram', icon: <MessageSquare className="w-8 h-8 text-red-400" />, path: '/telegram', desc: 'Akun Luar Negri' },
   ];
 
   return (
@@ -77,7 +77,7 @@ const LandingPage = () => {
               <img src={img} alt={`Banner ${idx + 1}`} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-4">
                 <span className="text-xs font-medium bg-red-600/90 text-white px-2.5 py-1 rounded-md backdrop-blur-sm">
-                  Promo Spesial Hari Ini
+                  Selamat datang di SNG
                 </span>
               </div>
             </div>
