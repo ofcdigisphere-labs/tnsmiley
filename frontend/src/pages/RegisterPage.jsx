@@ -61,10 +61,10 @@ const RegisterPage = () => {
         {/* Register Card */}
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
           <h2 className="text-xl md:text-2xl font-bold text-white mb-2 text-center">
-            Daftar Reseller
+            Daftar Qris Gateway
           </h2>
           <p className="text-gray-300 text-center mb-6 text-xs md:text-sm">
-            Bergabung sekarang dan nikmati kemudahan transaksi instan
+            Bergabung sekarang dan Akses API Gateway
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
