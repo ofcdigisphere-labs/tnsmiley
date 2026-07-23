@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, ArrowLeft, Loader2, CreditCard, Coins } from 'lucide-react';
+import { QrCode, ArrowLeft, Loader2, CreditCard, Coins, Wallet } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { topupAPI } from '../services/api';
 import axios from 'axios';
@@ -169,97 +169,97 @@ const TopupPage = () => {
   const selectedEwallet = EWALLETS.find(e => e.id === formData.ewalletType);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-950 text-white">
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-3 mb-6">
           <button
             onClick={goBack}
-            className="p-2 hover:bg-white/10 rounded-lg transition"
+            className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition"
           >
-            <ArrowLeft className="w-6 h-6 text-white" />
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
           <div className="flex items-center gap-2">
-            <Wallet className="w-8 h-8 text-purple-400" />
-            <h1 className="text-2xl font-bold text-white">Topup E-Wallet</h1>
+            <QrCode className="w-7 h-7 text-red-500" />
+            <h1 className="text-xl font-bold text-white">Topup E-Wallet</h1>
           </div>
         </div>
 
         {/* Progress Steps */}
-        <div className="max-w-2xl mx-auto mb-8 px-2">
+        <div className="mb-8 px-1">
           <div className="flex items-center justify-between">
-            {(user ? [1, 2, 3, 4] : [1, 2, 3]).map((num, index) => (
+            {(user ? [1, 2, 3, 4] : [1, 2, 3]).map((num) => (
               <div key={num} className="flex items-center flex-1 last:flex-initial">
                 <div
-                  className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base transition ${
+                  className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition ${
                     step >= num
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white/10 text-gray-400'
+                      ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                      : 'bg-white/5 border border-white/10 text-gray-400'
                   }`}
                 >
                   {num}
                 </div>
                 {((user && num < 4) || (!user && num < 3)) && (
                   <div
-                    className={`flex-1 h-1 mx-1 md:mx-2 ${
-                      step > num ? 'bg-purple-600' : 'bg-white/10'
+                    className={`flex-1 h-1 mx-1 sm:mx-2 rounded-full ${
+                      step > num ? 'bg-red-600' : 'bg-white/10'
                     }`}
                   />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-xs md:text-sm">
-            <span className={`${step >= 1 ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center md:text-left`}>
+          <div className="flex justify-between mt-2 text-[11px] sm:text-xs">
+            <span className={`${step >= 1 ? 'text-white font-medium' : 'text-gray-400'} text-center`}>
               E-Wallet
             </span>
-            <span className={`${step >= 2 ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center`}>
+            <span className={`${step >= 2 ? 'text-white font-medium' : 'text-gray-400'} text-center`}>
               Nominal
             </span>
             {user && (
-              <span className={`${step >= 3 ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center`}>
+              <span className={`${step >= 3 ? 'text-white font-medium' : 'text-gray-400'} text-center`}>
                 Metode
               </span>
             )}
-            <span className={`${step >= (user ? 4 : 3) ? 'text-white' : 'text-gray-400'} w-1/4 md:w-auto text-center md:text-right`}>
+            <span className={`${step >= (user ? 4 : 3) ? 'text-white font-medium' : 'text-gray-400'} text-center`}>
               Detail
             </span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="max-w-2xl mx-auto">
+        <div>
           {/* Step 1: Select E-Wallet */}
           {step === 1 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {EWALLETS.map((ewallet) => (
                 <button
                   key={ewallet.id}
                   onClick={() => selectEwallet(ewallet)}
                   disabled={loading}
-                  className="aspect-square bg-white/10 backdrop-blur-lg border-2 border-white/20 hover:border-purple-400 rounded-2xl p-6 transition transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 group"
+                  className="bg-white/5 hover:bg-white/15 active:scale-95 border border-white/10 hover:border-red-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition shadow-md group disabled:opacity-50"
                 >
-                  <div className="flex flex-col items-center justify-center h-full gap-3">
+                  <div className="relative mb-3">
                     <img 
                       src={ewallet.logo} 
                       alt={ewallet.name}
-                      className="w-20 h-20 object-contain rounded-xl"
+                      className="w-14 h-14 object-contain rounded-xl shadow-inner"
                       onError={(e) => {
                         e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'block';
+                        e.target.nextSibling.style.display = 'flex';
                       }}
                     />
                     <div 
-                      className={`hidden w-20 h-20 bg-gradient-to-br ${ewallet.color} rounded-xl flex items-center justify-center`}
+                      className={`hidden w-14 h-14 bg-gradient-to-br ${ewallet.color} rounded-xl items-center justify-center`}
                     >
-                      <span className="text-white font-bold text-xl">
+                      <span className="text-white font-bold text-lg">
                         {ewallet.name.charAt(0)}
                       </span>
                     </div>
-                    <p className="text-white font-semibold text-lg group-hover:text-purple-300 transition">
-                      {ewallet.name}
-                    </p>
                   </div>
+                  <p className="font-bold text-sm text-white group-hover:text-red-400 transition">
+                    {ewallet.name}
+                  </p>
                 </button>
               ))}
             </div>
@@ -267,21 +267,21 @@ const TopupPage = () => {
 
           {/* Step 2: Select Nominal */}
           {step === 2 && (
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
                 Pilih Nominal {selectedEwallet?.name}
               </h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {products.map((product) => (
                   <button
                     key={product.productCode}
                     onClick={() => selectNominal(product)}
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl p-6 text-left transition"
+                    className="bg-white/5 hover:bg-white/15 active:scale-98 border border-white/10 hover:border-red-500/50 rounded-xl p-4 text-left transition group"
                   >
-                    <p className="text-white font-semibold text-lg mb-1">
+                    <p className="font-bold text-sm sm:text-base text-white group-hover:text-red-400 mb-1">
                       {product.label}
                     </p>
-                    <p className="text-gray-400 text-sm line-clamp-2">
+                    <p className="text-gray-400 text-xs line-clamp-2">
                       {product.productName}
                     </p>
                   </button>
@@ -292,11 +292,11 @@ const TopupPage = () => {
 
           {/* Step 3: Select Payment Method (Only for logged in users) */}
           {step === 3 && user && (
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-2">Pilih Metode Pembayaran</h2>
-              <p className="text-gray-400 mb-6">Saldo Anda: Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-1">Pilih Metode Pembayaran</h2>
+              <p className="text-xs sm:text-sm text-gray-400 mb-5">Saldo Anda: Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
               
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 <button
                   onClick={() => {
                     if ((user.balance || 0) < formData.selectedProduct.amount) {
@@ -307,18 +307,20 @@ const TopupPage = () => {
                     setStep(4);
                   }}
                   disabled={(user.balance || 0) < formData.selectedProduct.amount}
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50 disabled:cursor-not-allowed p-6 rounded-xl text-white transition flex items-center justify-between group"
+                  className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 disabled:from-gray-700 disabled:to-gray-800 disabled:opacity-50 disabled:cursor-not-allowed p-4 rounded-xl text-white transition flex items-center justify-between shadow-lg"
                 >
-                  <div className="flex items-center gap-4">
-                    <Coins className="w-10 h-10" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white/10 rounded-lg">
+                      <Coins className="w-6 h-6" />
+                    </div>
                     <div className="text-left">
-                      <p className="font-bold text-xl">Saldo</p>
-                      <p className="text-sm opacity-90">Bayar menggunakan saldo Anda</p>
+                      <p className="font-bold text-sm sm:text-base">Saldo Akun</p>
+                      <p className="text-[11px] sm:text-xs opacity-90">Potong saldo instan</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm opacity-75">Saldo Anda</p>
-                    <p className="font-bold text-lg">Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
+                    <p className="text-[10px] sm:text-xs opacity-75">Tersedia</p>
+                    <p className="font-bold text-xs sm:text-sm">Rp {(user.balance || 0).toLocaleString('id-ID')}</p>
                   </div>
                 </button>
 
@@ -327,12 +329,14 @@ const TopupPage = () => {
                     setPaymentMethod('qris');
                     setStep(4);
                   }}
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 p-6 rounded-xl text-white transition flex items-center gap-4"
+                  className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 p-4 rounded-xl text-white transition flex items-center gap-3 shadow-lg shadow-red-600/20"
                 >
-                  <CreditCard className="w-10 h-10" />
+                  <div className="p-2 bg-white/10 rounded-lg">
+                    <CreditCard className="w-6 h-6" />
+                  </div>
                   <div className="text-left">
-                    <p className="font-bold text-xl">QRIS</p>
-                    <p className="text-sm opacity-90">Bayar dengan scan QR code</p>
+                    <p className="font-bold text-sm sm:text-base">QRIS Instant</p>
+                    <p className="text-[11px] sm:text-xs opacity-90">Scan QR code via semua e-wallet/bank</p>
                   </div>
                 </button>
               </div>
@@ -341,42 +345,34 @@ const TopupPage = () => {
 
           {/* Step 3 (for guest) OR Step 4 (for logged in): Input Details */}
           {((step === 4 && user) || (step === 3 && !user)) && (
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">Detail Order</h2>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-4">Detail Order</h2>
               
-              <div className="space-y-4 mb-6">
-                <div>
-                  <p className="text-gray-400 text-sm">E-Wallet</p>
-                  <p className="text-white font-semibold text-lg">
-                    {selectedEwallet?.name}
-                  </p>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2 mb-5">
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gray-400">E-Wallet</span>
+                  <span className="text-white font-semibold">{selectedEwallet?.name}</span>
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Produk</p>
-                  <p className="text-white font-semibold text-lg">
-                    {formData.selectedProduct?.productName}
-                  </p>
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gray-400">Produk</span>
+                  <span className="text-white font-semibold text-right max-w-[200px] truncate">{formData.selectedProduct?.productName}</span>
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Harga</p>
-                  <p className="text-white font-semibold text-lg">
-                    Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}
-                  </p>
+                <div className="flex justify-between text-xs sm:text-sm border-t border-white/10 pt-2">
+                  <span className="text-gray-400">Total Harga</span>
+                  <span className="text-red-400 font-bold">Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {paymentMethod === 'balance' && (
-                  <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 mb-4">
-                    <p className="text-yellow-300 text-sm">
-                      ⚠️ Saldo sebesar <strong>Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}</strong> akan dipotong dari akun Anda.
-                    </p>
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-amber-300 text-xs flex items-center gap-2">
+                    <span>⚠️ Saldo akun sebesar <strong>Rp {formData.selectedProduct?.amount.toLocaleString('id-ID')}</strong> akan langsung dipotong.</span>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-white mb-2">
-                    Nomor HP/ID E-Wallet *
+                  <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5">
+                    Nomor HP / ID E-Wallet *
                   </label>
                   <input
                     type="text"
@@ -384,15 +380,15 @@ const TopupPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, phoneNumber: e.target.value })
                     }
-                    placeholder="08xxxxxxxxxx"
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Contoh: 081234567890"
+                    className="w-full bg-white/5 border border-white/10 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white mb-2">
-                    Email (Opsional)
+                  <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5">
+                    Email (Opsional - untuk bukti transaksi)
                   </label>
                   <input
                     type="email"
@@ -401,22 +397,22 @@ const TopupPage = () => {
                       setFormData({ ...formData, email: e.target.value })
                     }
                     placeholder="email@example.com"
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-white/5 border border-white/10 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full bg-red-600 hover:bg-red-700 active:scale-98 text-white font-semibold py-3.5 rounded-xl text-sm transition shadow-lg shadow-red-600/30 disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      {paymentMethod === 'balance' ? 'Memproses Topup...' : 'Memproses...'}
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Memproses...</span>
                     </>
                   ) : (
-                    paymentMethod === 'balance' ? 'Proses Topup' : 'Lanjut Pembayaran'
+                    <span>{paymentMethod === 'balance' ? 'Proses Topup Sekarang' : 'Lanjut ke Pembayaran QRIS'}</span>
                   )}
                 </button>
               </form>
