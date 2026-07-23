@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { QrCode, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi, Wallet, Send, Megaphone } from 'lucide-react';
+import { QrCode, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi, Wallet, MessageSquare, Store } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const LandingPage = () => {
@@ -7,9 +7,9 @@ const LandingPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const banners = [
-    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80",
+  const heroBanners = [
     "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80",
     "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&auto=format&fit=crop&q=80"
   ];
 
@@ -18,33 +18,33 @@ const LandingPage = () => {
     setIsLoggedIn(!!userData);
 
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % banners.length);
-    }, 4000);
+      setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
+    }, 3500);
     return () => clearInterval(timer);
-  }, [banners.length]);
+  }, [heroBanners.length]);
 
-  const services = [
-    { title: 'Games', icon: <Gamepad2 className="w-8 h-8 text-red-400" />, path: '/games' },
-    { title: 'Pulsa', icon: <Smartphone className="w-8 h-8 text-red-400" />, path: '/pulsa' },
-    { title: 'Paket Data', icon: <Wifi className="w-8 h-8 text-red-400" />, path: '/data' },
-    { title: 'E-Wallet', icon: <Wallet className="w-8 h-8 text-red-400" />, path: '/topup' },
-    { title: 'Telegram', icon: <Send className="w-8 h-8 text-red-400" />, path: '/telegram' },
+  const serviceCategories = [
+    { title: 'Games', icon: <Gamepad2 className="w-8 h-8 text-red-400" />, path: '/games', desc: 'Topup Voucher Game' },
+    { title: 'Pulsa', icon: <Smartphone className="w-8 h-8 text-red-400" />, path: '/pulsa', desc: 'Semua Operator Seluler' },
+    { title: 'Paket Data', icon: <Wifi className="w-8 h-8 text-red-400" />, path: '/data', desc: 'Internet & Kuota Murah' },
+    { title: 'E-Wallet', icon: <Wallet className="w-8 h-8 text-red-400" />, path: '/topup', desc: 'DANA, OVO, GoPay, dll' },
+    { title: 'Telegram', icon: <MessageSquare className="w-8 h-8 text-red-400" />, path: '/telegram', desc: 'Akun & Kebutuhan Bot' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-950 text-white">
       {/* Header */}
-      <nav className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <QrCode className="w-8 h-8 text-red-500" />
-            <h1 className="text-2xl font-bold text-white tracking-wider">Scan N Go</h1>
+      <nav className="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-white/10 px-4 py-4">
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+            <QrCode className="w-7 h-7 text-red-500" />
+            <h1 className="text-xl font-extrabold tracking-wider text-white">Scan N Go</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {isLoggedIn ? (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition shadow-lg shadow-red-600/30"
+                className="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-red-600/30"
               >
                 <LayoutDashboard className="w-4 h-4" />
                 Dashboard
@@ -52,8 +52,9 @@ const LandingPage = () => {
             ) : (
               <button
                 onClick={() => navigate('/register')}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition shadow-lg shadow-red-600/30"
+                className="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-lg shadow-red-600/30"
               >
+                <Store className="w-4 h-4" />
                 Jadi Reseller
               </button>
             )}
@@ -61,94 +62,87 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-12">
+      {/* Main Content (Mobile Optimized) */}
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        
         {/* Banner Slider 16:9 */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-black/40">
-            {banners.map((banner, index) => (
-              <div
-                key={index}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                  index === currentSlide ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <img src={banner} alt="Promo Banner" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+        <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 bg-slate-900">
+          {heroBanners.map((img, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                idx === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+              }`}
+            >
+              <img src={img} alt={`Banner ${idx + 1}`} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-4">
+                <span className="text-xs font-medium bg-red-600/90 text-white px-2.5 py-1 rounded-md backdrop-blur-sm">
+                  Promo Spesial Hari Ini
+                </span>
               </div>
-            ))}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-              {banners.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index === currentSlide ? 'bg-red-500 w-6' : 'bg-white/50'
-                  }`}
-                />
-              ))}
             </div>
+          ))}
+          <div className="absolute bottom-3 right-3 flex gap-1.5 z-10">
+            {heroBanners.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-1.5 rounded-full transition-all ${idx === currentSlide ? 'w-6 bg-red-500' : 'w-1.5 bg-white/40'}`}
+                aria-label={`Slide ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 px-4">
-            Topup & Transaksi
-            <span className="text-red-500"> Instant</span>
-          </h2>
-          <p className="text-base md:text-xl text-gray-300 mb-10 px-4">
-            Solusi lengkap pembayaran digital, Games, Pulsa, dan E-Wallet dalam satu genggaman.
-          </p>
-        </div>
-
-        {/* Daftar Layanan Tersedia (Grid) */}
-        <div className="max-w-5xl mx-auto mt-8">
-          <h3 className="text-xl md:text-2xl font-bold text-white text-center mb-6 px-4">
-            Daftar Layanan Tersedia
+        {/* Layanan Tersedia Section */}
+        <div className="mb-10">
+          <h3 className="text-lg font-bold text-white mb-4 px-1 flex items-center justify-between">
+            <span>Daftar Layanan Tersedia</span>
+            <span className="text-xs font-normal text-red-400">Pilih & Klik Menu</span>
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6 px-4">
-            {services.map((item, index) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {serviceCategories.map((item, index) => (
               <div
                 key={index}
                 onClick={() => navigate(item.path)}
-                className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-red-600/20 hover:border-red-500/50 transition-all transform hover:scale-105 shadow-xl group"
+                className="bg-white/5 hover:bg-white/15 active:scale-95 border border-white/10 rounded-2xl p-4 flex flex-col items-center text-center cursor-pointer transition shadow-md group"
               >
-                <div className="p-4 rounded-xl bg-white/5 mb-3 group-hover:bg-red-500/20 transition">
+                <div className="p-3 bg-red-500/10 rounded-xl mb-3 group-hover:bg-red-500/20 transition">
                   {item.icon}
                 </div>
-                <h4 className="text-white font-semibold text-base md:text-lg">{item.title}</h4>
+                <h4 className="font-bold text-sm text-white mb-1">{item.title}</h4>
+                <p className="text-[11px] text-gray-400 leading-tight">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Keunggulan */}
-        <div className="max-w-6xl mx-auto mt-24">
-          <h3 className="text-xl md:text-2xl font-bold text-white text-center mb-10 px-4">
-            Keunggulan
-          </h3>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 px-4">
+        {/* Keunggulan Section */}
+        <div className="mb-10">
+          <h3 className="text-lg font-bold text-white mb-4 px-1">Keunggulan</h3>
+          <div className="grid grid-cols-1 gap-3">
             <FeatureCard
-              icon={<Zap className="w-12 h-12 text-red-500" />}
+              icon={<Zap className="w-7 h-7 text-red-400" />}
               title="Proses Cepat"
               description="Transaksi otomatis diproses dalam hitungan detik setelah pembayaran"
             />
             <FeatureCard
-              icon={<Shield className="w-12 h-12 text-red-500" />}
+              icon={<Shield className="w-7 h-7 text-red-400" />}
               title="Aman & Terpercaya"
               description="Sistem pembayaran QRIS resmi yang aman dan terverifikasi"
             />
             <FeatureCard
-              icon={<Megaphone className="w-12 h-12 text-red-500" />}
-              title="Layanan Lengkap"
-              description="Support berbagai produk digital mulai dari Games hingga E-Wallet"
+              icon={<QrCode className="w-7 h-7 text-red-400" />}
+              title="Multi Layanan"
+              description="Games, pulsa, paket data, dan e-wallet lengkap dalam satu genggaman"
             />
           </div>
         </div>
+
       </div>
 
       {/* Footer */}
-      <footer className="container mx-auto px-4 py-8 text-center text-gray-400 border-t border-white/10 mt-20">
+      <footer className="border-t border-white/10 py-6 text-center text-xs text-gray-400 bg-slate-950/50">
         <p>&copy; 2026 Scan N Go. All rights reserved.</p>
       </footer>
     </div>
@@ -157,10 +151,12 @@ const LandingPage = () => {
 
 const FeatureCard = ({ icon, title, description }) => {
   return (
-    <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 md:p-8 hover:bg-white/10 transition">
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-lg md:text-xl font-bold text-white mb-2">{title}</h3>
-      <p className="text-sm md:text-base text-gray-300">{description}</p>
+    <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start gap-4">
+      <div className="p-2 bg-red-500/10 rounded-lg shrink-0">{icon}</div>
+      <div>
+        <h4 className="font-bold text-sm text-white mb-1">{title}</h4>
+        <p className="text-xs text-gray-300 leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 };
