@@ -106,7 +106,7 @@ const LoginPage = () => {
             <p className="text-sm text-gray-300">
               Belum punya akun?{' '}
               <Link to="https://wa.me/62895412898210" className="text-red-400 hover:text-red-300 font-semibold transition">
-                Daftar Akun
+                Daftar Sekarang
               </Link>
             </p>
           </div>
