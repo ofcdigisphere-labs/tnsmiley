@@ -1,15 +1,11 @@
-import { useNavigate } from 'react-router-dom';
-import { QrCode, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi, Wallet, MessageSquare, Store, CheckCircle2, XCircle, TrendingUp } from 'lucide-react';
+Import { useNavigate } from 'react-router-dom';
+import { QrCode, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi, Wallet, MessageSquare, Store } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  // State untuk data dummy transaksi acak
-  const [successCount, setSuccessCount] = useState(0);
-  const [failedCount, setFailedCount] = useState(0);
 
   const heroBanners = [
     "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80",
@@ -24,11 +20,6 @@ const LandingPage = () => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
     }, 3500);
-
-    // Generator angka acak untuk tampilan saja (simulasi fake live data)
-    setSuccessCount(Math.floor(Math.random() * (7373 - 1833 + 1)) + 1833);
-    setFailedCount(Math.floor(Math.random() * (1000 - 500 + 1)) + 500);
-
     return () => clearInterval(timer);
   }, [heroBanners.length]);
 
@@ -123,41 +114,6 @@ const LandingPage = () => {
                 <p className="text-[11px] text-gray-400 leading-tight">{item.desc}</p>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Live Simulation Status Section (Di atas Keunggulan) */}
-        <div className="mb-10">
-          <h3 className="text-lg font-bold text-white mb-4 px-1 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-red-500" />
-            <span>Statistik Transaksi Hari Ini</span>
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            {/* Transaksi Berhasil */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3 shadow-md">
-              <div className="p-3 bg-emerald-500/10 rounded-xl shrink-0">
-                <CheckCircle2 className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-[11px] text-gray-400 leading-tight mb-1">Berhasil</p>
-                <h4 className="font-extrabold text-lg text-emerald-400">
-                  {successCount.toLocaleString('id-ID')}
-                </h4>
-              </div>
-            </div>
-
-            {/* Transaksi Gagal / Batal */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3 shadow-md">
-              <div className="p-3 bg-rose-500/10 rounded-xl shrink-0">
-                <XCircle className="w-6 h-6 text-rose-400" />
-              </div>
-              <div>
-                <p className="text-[11px] text-gray-400 leading-tight mb-1">Gagal / Batal</p>
-                <h4 className="font-extrabold text-lg text-rose-400">
-                  {failedCount.toLocaleString('id-ID')}
-                </h4>
-              </div>
-            </div>
           </div>
         </div>
 
