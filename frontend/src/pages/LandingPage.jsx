@@ -1,11 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import { QrCode, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi, Wallet, MessageSquare, Store } from 'lucide-react';
+import { QrCode, Zap, Shield, ArrowRight, LayoutDashboard, Gamepad2, Smartphone, Wifi, Wallet, MessageSquare, Store, TrendingUp, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // State untuk dummy statistik transaksi ngacak
+  const [stats, setStats] = useState({
+    successCount: 0,
+    failedCount: 0,
+    timestamp: ''
+  });
 
   const heroBanners = [
     "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80",
@@ -16,6 +23,18 @@ const LandingPage = () => {
   useEffect(() => {
     const userData = localStorage.getItem('user');
     setIsLoggedIn(!!userData);
+
+    // Generator angka acak sesuai permintaan
+    // Sukses: 1,833 - 7,373
+    const randomSuccess = Math.floor(Math.random() * (7373 - 1833 + 1)) + 1833;
+    // Gagal/Batal: 500 - 1,000
+    const randomFailed = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+
+    setStats({
+      successCount: randomSuccess,
+      failedCount: randomFailed,
+      timestamp: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+    });
 
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
@@ -91,6 +110,48 @@ const LandingPage = () => {
                 aria-label={`Slide ${idx + 1}`}
               />
             ))}
+          </div>
+        </div>
+
+        {/* Tampilan Statistik Transaksi (Formalitas) */}
+        <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-md shadow-xl">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-red-400" />
+              <span className="text-xs font-bold text-gray-200 uppercase tracking-wider">Statistik Sistem Hari Ini</span>
+            </div>
+            <div className="flex items-center gap-1 text-[11px] text-gray-400 bg-black/30 px-2 py-0.5 rounded-full">
+              <Clock className="w-3 h-3 text-red-400" />
+              <span>{stats.timestamp}</span>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {/* Transaksi Berhasil */}
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 flex items-center gap-3">
+              <div className="p-2 bg-emerald-500/20 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-[11px] text-emerald-300 font-medium">Berhasil</p>
+                <h4 className="text-lg font-extrabold text-white">
+                  {stats.successCount.toLocaleString('id-ID')} <span className="text-[10px] font-normal text-gray-400">trx</span>
+                </h4>
+              </div>
+            </div>
+
+            {/* Transaksi Gagal/Batal */}
+            <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex items-center gap-3">
+              <div className="p-2 bg-rose-500/20 rounded-lg">
+                <XCircle className="w-5 h-5 text-rose-400" />
+              </div>
+              <div>
+                <p className="text-[11px] text-rose-300 font-medium">Gagal / Batal</p>
+                <h4 className="text-lg font-extrabold text-white">
+                  {stats.failedCount.toLocaleString('id-ID')} <span className="text-[10px] font-normal text-gray-400">trx</span>
+                </h4>
+              </div>
+            </div>
           </div>
         </div>
 
